@@ -25,6 +25,9 @@ inputs:
     description: "The name of the environment for the deployment"
     default: "production"
     required: false
+  pr_id:
+    description: "The ID of the current pr"
+    required: false
 outputs:
   deployment_id:
     description: "The ID of the created deployment"
