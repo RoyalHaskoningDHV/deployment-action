@@ -3203,14 +3203,24 @@ var __importStar = (this && this.__importStar) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const core = __importStar(__webpack_require__(470));
 const github = __importStar(__webpack_require__(469));
+function isProductionEnvironment(productionEnvironmentInput) {
+    if (["true", "false"].includes(productionEnvironmentInput)) {
+        return productionEnvironmentInput === "true";
+    }
+    // Use undefined to signal, that the default behavior should be used.
+    return undefined;
+}
 function run() {
     return __awaiter(this, void 0, void 0, function* () {
         try {
             const context = github.context;
-            const logUrl = `https://github.com/${context.repo.owner}/${context.repo.repo}/commit/${context.sha}/checks`;
+            const pr_id = core.getInput("pr_id", { required: false });
+            const logUrl = pr_id ? `https://github.com/${context.repo.owner}/${context.repo.repo}/pull/${pr_id}/checks` :
+                `https://github.com/${context.repo.owner}/${context.repo.repo}/commit/${context.sha}/checks`;
             const token = core.getInput("token", { required: true });
             const ref = core.getInput("ref", { required: false }) || context.ref;
             const url = core.getInput("target_url", { required: false }) || logUrl;
+            const payload = core.getInput("payload", { required: false });
             const environment = core.getInput("environment", { required: false }) || "production";
             const description = core.getInput("description", { required: false });
             const initialStatus = core.getInput("initial_status", {
@@ -3219,6 +3229,8 @@ function run() {
             const autoMergeStringInput = core.getInput("auto_merge", {
                 required: false
             });
+            const transientEnvironment = core.getInput("transient_environment", { required: false }) === "true";
+            const productionEnvironment = isProductionEnvironment(core.getInput("production_environment", { required: false }));
             const auto_merge = autoMergeStringInput === "true";
             const client = new github.GitHub(token, { previews: ["flash", "ant-man"] });
             const deployment = yield client.repos.createDeployment({
@@ -3227,7 +3239,9 @@ function run() {
                 ref: ref,
                 required_contexts: [],
                 environment,
-                transient_environment: true,
+                payload: payload ? JSON.parse(payload) : {},
+                transient_environment: transientEnvironment,
+                production_environment: productionEnvironment,
                 auto_merge,
                 description
             });

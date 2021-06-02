@@ -94,3 +94,7 @@ typings/
 # DynamoDB Local files
 .dynamodb/
 node_modules
+
+# IntelliJ Files
+.idea
+*.iml
