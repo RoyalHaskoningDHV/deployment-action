@@ -28,7 +28,8 @@ async function run() {
         `https://github.com/${context.repo.owner}/${context.repo.repo}/commit/${context.sha}/checks`;
 
     const token = core.getInput("token", { required: true });
-    const ref = core.getInput("ref", { required: false }) || context.ref;
+    const headRef = process.env.GITHUB_HEAD_REF as string;
+    const ref = core.getInput("ref", { required: false }) || headRef || context.ref;
     const url = core.getInput("target_url", { required: false }) || logUrl;
     const payload = core.getInput("payload", { required: false }) ;
     const environment =
