@@ -28,6 +28,9 @@ inputs:
   pr_id:
     description: "The ID of the current pr"
     required: false
+  payload:
+    description: "Additional metadata attached to a deployment"
+    required: false
 outputs:
   deployment_id:
     description: "The ID of the created deployment"
